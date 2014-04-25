@@ -1,14 +1,8 @@
-package heapsort
-
-import . "sort"
-import "fmt"
-import "math"
-
 // The heapsort package implements a simple heapsort sorting algorithm.
 //
-// HeapSort proceeds in two phases. First we build the binary tree with the invariant
+// HeapSort proceeds in two phases. First we build the binary tree while maintaining an invariant.
 // After that it's easy, we take the highest value located at the root, index 0
-// put it at the end, and rebuild the tree with 1 less element
+// and swap it with the last element, and rebuild the binary tree with 1 less element
 //
 // The key data structure here, the heap, is really just a flattened complete binary tree.
 // Complete means every level but the last is fully filled.
@@ -19,8 +13,14 @@ import "math"
 // the right child node of e is at 2 * i + 2,
 // the parent node of e is at (i-1) / 2, which implies the root is on the "left", at index 0
 // the invariant that must be satisifed is that s[parent(i)] >= s[i].
+package heapsort
 
-// lp prints a linear list of a heap of values
+import . "sort"
+import "fmt"
+import "math"
+
+
+// Pl prints a linear list of a heap of values and indicies underneath them.
 func Pl(d Interface, str string) {
     s := (d).(IntSlice)
     fmt.Printf("%s: ", str)
@@ -39,7 +39,7 @@ func exp(x, y int) int {
   return int(math.Pow(float64(x), float64(y)))
 }
 
-// tp prints the tree of a heap of values
+// Pt prints the heap as a formatted binary tree.
 func Pt(d Interface) {
     s := (d).(IntSlice)
     l := 0
@@ -92,7 +92,7 @@ func h(d Interface, ni, ari int) {
     //p(s)
 }
 
-// sort a slice using a heaport
+// Heapsort sorts data using a heaport algorithm. Implements the standard sort.Interface.
 func Heapsort(d Interface) {
     //s := (d).(IntSlice)
     //Pl(d, "s")
