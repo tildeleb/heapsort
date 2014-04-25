@@ -64,11 +64,8 @@ func h(d Interface, ni, ari int) {
     ri := ari
     //si := ari
     //fmt.Printf("h(s, ni=%d, ri=%d), r=%d\n", ni, ri, r)
-    for {
+    for ri < (ni + 1) / 2 {
         ci := ri * 2 + 1
-        if ci > ni {
-            break
-        }
         //fmt.Printf("ci=%d, ri=%d, ni=%d\n", ci, ri, ni)
 
         if ci < ni {

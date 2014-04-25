@@ -75,7 +75,7 @@ func TestAdvanced(t *testing.T) {
 }
 
 func TestExtended(t *testing.T) {
-    for i := int64(1); i < 10; i++ {
+    for i := int64(1); i < 25; i++ {
         //t.Logf("i=%d\n", i)
         rand.Seed(i)
         n := rbetween(10, 1000000)
