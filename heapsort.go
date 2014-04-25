@@ -12,11 +12,12 @@ import "math"
 //
 // The key data structure here, the heap, is really just a flattened complete binary tree.
 // Complete means every level but the last is fully filled.
+// Unlike many examples of Heapsort we use index 0.
 // The heap is accessed as follows.
 // Given an element e at location i:
-// the left child node of e is at 2 * i,
-// the right child node of e is at 2 * i + 1,
-// the parent node of e is at i / 2, which implies the root is on the "left", ie at index 0
+// the left child node of e is at 2 * i + 1,
+// the right child node of e is at 2 * i + 2,
+// the parent node of e is at (i-1) / 2, which implies the root is on the "left", at index 0
 // the invariant that must be satisifed is that s[parent(i)] >= s[i].
 
 // lp prints a linear list of a heap of values
