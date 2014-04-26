@@ -1,12 +1,13 @@
+// Copyright © 2014 Lawrence E. Bakst. All rights reserved.
 // The heapsort package implements a simple heapsort sorting algorithm.
 //
-// HeapSort proceeds in two phases. First we build the binary tree while maintaining an invariant.
-// After that it's easy, we take the highest value located at the root, index 0
-// and swap it with the last element, and rebuild the binary tree with 1 less element
+// HeapSort proceeds in two phases. First we build a complete binary tree called the heap, while maintaining an invariant.
+// Second, we take the highest value, located at the root, index 0 and swap it with the last element,
+// and rebuild the heap with 1 less element, as the largest elements are repeatedly swapped to the end.
 //
 // The key data structure here, the heap, is really just a flattened complete binary tree.
 // Complete means every level but the last is fully filled.
-// Unlike many examples of Heapsort we use index 0.
+// Unlike many examples of Heapsort we use index 0, most start at index 1 
 // The heap is accessed as follows.
 // Given an element e at location i:
 // the left child node of e is at 2 * i + 1,
@@ -18,7 +19,6 @@ package heapsort
 import . "sort"
 import "fmt"
 import "math"
-
 
 // Pl prints a linear list of a heap of values and indicies underneath them.
 func Pl(d Interface, str string) {
@@ -54,73 +54,53 @@ func Pt(d Interface) {
     fmt.Printf("\n\n")
 }
 
-// traverse a (sub)tree downwards starting at r, but stopping when we get to the end, ci < ni.
-// while traversing check the invariant and if not satisfied fix it by swapping the root and child
-// this routine assumes that the nodes below it already satisfy the invariant
-func h(d Interface, ni, ari int) {
+// Knuth calles this function "siftup" and others call this "heapify". I hate both, but Knuth wins.
+// Traverse a (sub)tree downwards starting at r, but stopping when we get to the end, ci < ni.
+// While traversing check the invariant and if not satisfied fix it by swapping the root and child
+// this routine assumes that the nodes below it already satisfy the invariant.
+// In order to build a healp from scratch level l-1 must satisfy the invariant before level l.
+func siftup(d Interface, ni, ari int) {
     //s := (d).(IntSlice)
     //r := s[ari]
 
     ri := ari
-    //si := ari
     //fmt.Printf("h(s, ni=%d, ri=%d), r=%d\n", ni, ri, r)
     for ri < (ni + 1) / 2 {
-        ci := ri * 2 + 1
+        ci := ri * 2 + 1 // calculate left child node
         //fmt.Printf("ci=%d, ri=%d, ni=%d\n", ci, ri, ni)
 
-        if ci < ni {
-            //fmt.Printf("s[%d]=%d s[%d]=%d\n", ci, s[ci], ci+1, s[ci+1])
-        }
-        // follow the largest node
-        if ci < ni && d.Less(ci, ci+1) { // s[ci] < s[ci+1]
+        if ci < ni && d.Less(ci, ci+1) { // follow the largest node left or right
             ci++
             //fmt.Printf("ci=%d\n", ci)
         }
-        if ni < 1 || d.Less(ci, ri)  { // invariant holds // r >= s[ci]
+        if d.Less(ci, ri)  { // invariant holds // ni < 1 || 
             break
         }
-        // invariant doesn't hold, copy child to root and descent to the next level of tree
+        // invariant doesn't hold, swap child and root and descent to the next level of tree
         //fmt.Printf("descend: Swap(%d, %d) = (%d, %d)\n", ri, ci, s[ri], s[ci])
-        d.Swap(ri, ci) // bubble up the child value, s[ri] has already been saved, and the new one is a copy //         s[ri] = s[ci] 
-        //si = ci
+        d.Swap(ri, ci)
         ri = ci
     }
-    //fmt.Printf("exit: Swap(%d, %d) = (%d, %d)\n\n", ari, si, s[ari], s[si])
-    //Pl(d, "b")
-    //d.Swap(ari, si) // s[ri] = r
-    //Pl(d, "a")
-    //p(s)
 }
 
 // Heapsort sorts data using a heaport algorithm. Implements the standard sort.Interface.
 func Heapsort(d Interface) {
-    //s := (d).(IntSlice)
-    //Pl(d, "s")
-    //d.Swap(0, 1)
-    //Pl(d, "e")
-    //return
     n := d.Len()-1
     // build a heap with max element at index 0 by building a binary tree and repeatedly satisfying the invaraint from the bottom up
     for i := n/2; i >= 0; i-- {
-        h(d, n, i)
+        siftup(d, n, i)
         //Pl(d, "i")
-/*
-        if (i == 1) {
-            return
-        }
-*/
     }
     //Pl(d, "m")
     //Pt(d)
 
-    // repeatedly put the root (largest element) at the end of the slice and rebuild the heap
+    // repeatedly put the root (largest element) at the end of the slice and rebuild the heap with one less element
     for n > 0 {
         //fmt.Printf("Heapsort: Swap(%d, %d), Swap(%d, %d)\n", 0, n, s[0], s[n])
-        d.Swap(0, n) // s[0], s[n] = s[n], s[0]
+        d.Swap(0, n)
         n--
-        h(d, n, 0)
+        siftup(d, n, 0)
         //Pl(d, "p")
         //Pt(d)
     }
 }
-

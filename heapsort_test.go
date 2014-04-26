@@ -1,9 +1,10 @@
+// Copyright © 2014 Lawrence E. Bakst. All rights reserved.
 package heapsort_test
 
 import . "leb/heapsort"
 //import "flag"
-//import "fmt"
-//import "math"
+import "fmt"
+import "time"
 import "math/rand"
 import "testing"
 import . "sort"
@@ -21,6 +22,7 @@ func rbetween(a int, b int) int {
         return ret
 }
 
+// verify that a slice is in order
 func verify(t *testing.T, s IntSlice) {
     pv := -1
     for k, v := range s {
@@ -35,6 +37,7 @@ func verify(t *testing.T, s IntSlice) {
     }
 }
 
+// fill a slice with randome numbers
 func fill(s IntSlice, a, b int) {
     for i := range s {
         s[i] = rbetween(a, b)
@@ -75,16 +78,24 @@ func TestAdvanced(t *testing.T) {
 }
 
 func TestExtended(t *testing.T) {
-    for i := int64(1); i < 25; i++ {
+    for i := 1; i <= 100; i++ { // start with 1 to get the seed we're used to
         //t.Logf("i=%d\n", i)
-        rand.Seed(i)
-        n := rbetween(10, 1000000)
-        //t.Logf("n=%d\n", n)
+        seed := int64(0)
+        // fixed pattern or different values each time
+        if false {
+            seed = int64(i)
+        } else {
+            seed = time.Now().UTC().UnixNano()
+        }
+        rand.Seed(seed)
+        n := rbetween(10, 100000)
+        fmt.Printf("%d: %d ", i, n)
         s := make(IntSlice, n)
         fill(s, 1, n*3)
         Heapsort(s)
         verify(t, s)
     }
+    fmt.Printf("\n")
 }
 
 /*
