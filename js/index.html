@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <!-- 
+	* code from: http://www.html5rocks.com/en/tutorials/file/dndfiles/
+	* Copyright (c) 2012 Google Inc.
+	* Copyright (c) 2014 Lawrence E. Bakst
+	*
+	* Licensed under the Apache License, Version 2.0 (the "License");
+	* you may not use this file except in compliance with the License.
+	*
+	* Author: Eric Bidelman <e.bidelman@chromium.org>
+	* Author: Lawrence E. Bakst <leb@me.com>
+	*
+ -->
+	<!-- start: Meta -->
+	<meta charset="utf-8">
+	<title>HeapSort Tester</title>
+	<meta name="description" content="heapsort">
+	<meta name="author" content="Lawrence E. Bakst">
+	<!-- end: Meta -->
+	
+	<!-- start: CSS -->
+	<style>
+	.example {
+	  padding: 10px;
+	  border: 1px solid #ccc;
+	}
+	#drop_zone {
+	  border: 2px dashed #bbb;
+	  -moz-border-radius: 5px;
+	  -webkit-border-radius: 5px;
+	  border-radius: 5px;
+	  padding: 25px;
+	  text-align: center;
+	  font: 20pt bold 'Vollkorn';
+	  color: #bbb;
+	}
+	#log {
+		font: 12pt 'Courier';
+	}
+	</style>
+	<!-- end: CSS -->
+
+	<!-- start: Favicon -->
+	<link rel="shortcut icon" href="img/favicon.ico">
+	<!-- end: Favicon -->
+</head>
+<body>
+	<div class="example">
+		<div id="drop_zone">Drop files here</div>
+	<output id="file_list2"></output>
+	</div>
+	<output id="list"></output>
+	<output id="log"></output>
+
+<!-- start: JavaScript-->
+	<script src="heapsort.js"></script>
+
+<script>
+// <div id="drop_zone">Drop files here</div>
+
+function handleFileSelect(evt) {
+   	//console.log("handleFileSelect");
+   	evt.stopPropagation();
+   	evt.preventDefault();
+   	
+   	var compare = function(a, b) {
+        if (a < b) {
+            return true
+        } else {
+            return false
+        }
+    }
+
+   	var data = new Array(1000000)
+   	var idx = 0;
+   	var len = 0;
+   	var tmp;
+   	var lineLength = 100;
+   	var files = evt.dataTransfer.files; // FileList object.
+	var reader = new FileReader();
+
+    // files is a FileList of File objects. List some properties.
+    var output = [];
+    var log = [];
+    var start = 0;
+    var stop = 0;
+    for (var i = 0, f; f = files[i]; i++) {
+    	output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
+        	f.size, ' bytes, last modified: ',
+            f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
+            '</li>');
+
+			//console.log("f=%o", f)
+			
+			// Closure to capture the file information.
+			reader.onload = (function(f) {
+		        return function(e) {
+					data[idx++] = e.target.result
+					len += lineLength;
+					if (len < f.size) { // chain another I/O request
+						var blob = f.slice(len, len+lineLength-1);
+						reader.readAsText(blob)
+					} else {
+						data.length = idx;
+						HeapSort(data, compare)
+						for (var j = 0; j < 10; j++) {
+							log.push(escape(data[j].substring(13,44)), '<br>');
+						}
+						document.getElementById('log').innerHTML = '<ul>' + log.join('') + '</ul>';
+					}
+		        };
+			})(f);
+
+			// Start reading in the file and chain on completions.
+			var blob = f.slice(0, lineLength-1);
+			reader.readAsText(blob)
+	}
+	document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
+  }
+
+function handleDragOver(evt) {
+	//console.log("handleDragOver");
+	evt.stopPropagation();
+	evt.preventDefault();
+	evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+	//console.log("ready");
+});
+
+function errorHandler(e) {
+  var msg = '';
+
+  switch (e.code) {
+    case FileError.QUOTA_EXCEEDED_ERR:
+      msg = 'QUOTA_EXCEEDED_ERR';
+      break;
+    case FileError.NOT_FOUND_ERR:
+      msg = 'NOT_FOUND_ERR';
+      break;
+    case FileError.SECURITY_ERR:
+      msg = 'SECURITY_ERR';
+      break;
+    case FileError.INVALID_MODIFICATION_ERR:
+      msg = 'INVALID_MODIFICATION_ERR';
+      break;
+    case FileError.INVALID_STATE_ERR:
+      msg = 'INVALID_STATE_ERR';
+      break;
+    default:
+      msg = 'Unknown Error';
+      break;
+  };
+
+  console.log('Error: ' + msg);
+}
+
+
+function onInitFs(fs) {
+
+  fs.root.getFile('log.txt', {create: true}, function(fileEntry) {
+
+    // Create a FileWriter object for our FileEntry (log.txt).
+    fileEntry.createWriter(function(fileWriter) {
+
+      fileWriter.onwriteend = function(e) {
+        console.log('Write completed.');
+      };
+
+      fileWriter.onerror = function(e) {
+        console.log('Write failed: ' + e.toString());
+      };
+
+      // Create a new Blob and write it to log.txt.
+      var blob = new Blob(['Lorem Ipsum'], {type: 'text/plain'});
+
+      fileWriter.write(blob);
+      console.log("written");
+
+    }, errorHandler);
+
+  }, errorHandler);
+
+}
+
+// Setup the dnd listeners.
+var dropZone = document.getElementById('drop_zone');
+dropZone.addEventListener('dragover', handleDragOver, false);
+dropZone.addEventListener('drop', handleFileSelect, false);
+
+//window.requestFileSystem(window.TEMPORARY, 1024*1024, onInitFs, errorHandler);
+
+</script>
+<!-- end: JavaScript-->
+</body>
+</html>
+
