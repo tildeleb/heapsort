@@ -5,6 +5,7 @@ import . "leb/heapsort"
 //import "flag"
 import "fmt"
 import "time"
+import "math"
 import "math/rand"
 import "testing"
 import . "sort"
@@ -20,6 +21,40 @@ func rbetween(a int, b int) int {
         //fmt.Printf("rbetween: a=%d, b=%d, rf=%f, diff=%f, r2=%f, r3=%f\n", a, b, rf, diff, r2, r3)
         ret := int(r3)
         return ret
+}
+
+// Pl prints a linear list of a heap of values and indicies underneath them.
+func Pl(d Interface, str string) {
+    s := (d).(IntSlice)
+    fmt.Printf("%s: ", str)
+    for _, v := range s {
+        fmt.Printf("%02d ", v)
+    }
+    fmt.Printf("\n")
+    fmt.Printf("%s: ", str)
+    for i := range s {
+        fmt.Printf("%02d ", i)
+    }
+    fmt.Printf("\n")
+}
+
+func exp(x, y int) int {
+    return int(math.Pow(float64(x), float64(y)))
+}
+
+// Pt prints the heap as a formatted binary tree.
+func Pt(d Interface) {
+    s := (d).(IntSlice)
+    l := 0
+    for i := range s {
+        newlevel := exp(2, l) - 1
+        if i == newlevel {
+            l++
+            fmt.Printf("\n%d: ", l)
+        }
+        fmt.Printf("%d ", s[i])
+    }
+    fmt.Printf("\n\n")
 }
 
 // verify that a slice is in order
@@ -48,13 +83,11 @@ func TestTrivial(t *testing.T) {
     var s IntSlice = []int{60, 94, 66, 44, 43, 68, 7, 16, 10, 30, 52, 81, 22, 38, 32}
     //var s []int = []int{16, 14, 10, 8, 7, 9, 3, 2, 4, 1}
 
-    //pl(s, "start")
-    //pt(s)
+    //Pl(s, "start")
+    //Pt(s)
     Heapsort(s)
-    //s[0] = 100
-    //pl(s)
-    Pl(s, "e")
-    Pt(s)
+    //Pl(s, "e")
+    //Pt(s)
     verify(t, s)
 }
 
@@ -89,13 +122,13 @@ func TestExtended(t *testing.T) {
         }
         rand.Seed(seed)
         n := rbetween(10, 100000)
-        fmt.Printf("%d: %d ", i, n)
+        //fmt.Printf("%d: %d ", i, n)
         s := make(IntSlice, n)
         fill(s, 1, n*3)
         Heapsort(s)
         verify(t, s)
     }
-    fmt.Printf("\n")
+    //fmt.Printf("\n")
 }
 
 /*

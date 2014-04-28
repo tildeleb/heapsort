@@ -4,7 +4,7 @@ HeapSort
 Introduction
 ------------
 
-There are three versions of HeapSort here:
+There are three versions of HeapSort in this repository:
 
 1. heapsort.go
 2. c/heapsort.c
@@ -13,18 +13,13 @@ There are three versions of HeapSort here:
 
 Approach
 --------
-My approach to the assignment was 3 fold.
+My approach to the assignment was in 4 phases.
 
-First, I refreshed my memory of HeapSort by looking on the web and in Knuth Volume 3. It's basically a two phase sort the first part being the setup of a heap which is a complete binary tree with an associated invariant that orders the nodes. The second part of the algorithm is a selection sort where the highest value (at the root) is moved from the end of a vector and the heap is rebuilt again, with the length being 1 less to satisfy the the invariant.
-
+First, I refreshed my memory of HeapSort by looking on the web and in Knuth Volume 3. It's basically a two phase sort the first part being the setup of a heap, a complete binary tree with an associated invariant that orders the nodes. The second part of the algorithm is a selection sort where the highest value (at the root) is moved from the end of a vector and the heap is rebuilt again, with the length being 1 less, to satisfy the the invariant.
 
 Second, I looked at a number of implementations and they were all about the same. Of course some were clearer and better written than others. I coded a simple version in Go to get a feel for the algorithm.
 
-Finally, I wrote the 3 versions you see here.
-
-Decision about the Go Version of HeapSort
------------------------------------------
-Go's libraries have a public interface for sort algorithms called, creatively enough, "Interface". This interface only has 3 functions defined:
+Third, there were some decisions to make about the algorithm. It had to use location 0 of a slice and many of the examples start at location 1. That's an easy adjustment. Another decision to make was to use the Go sort package interface called Interface. Go's libraries have a public interface for sort algorithms called, creatively enough, "Interface". This interface only has 3 functions defined:
 
 	type Interface interface {
 		Len() int
@@ -34,10 +29,21 @@ Go's libraries have a public interface for sort algorithms called, creatively en
 
 I decided to support the interface. It caused me to have to change my algorithm a bit because I used copy operations to move nodes in the heap and the interface only has a swap operation. With some regret I changed my version of HeapSort to use swaps instead of copies.
 
+Finally, I wrote the 3 versions submitted.
+
 The Go version of HeapSort
 --------------------------
+The Go version is easily built and tested by issuing the commands:
+
+	go build
+	go test
+
 The C version of HeapSort
 -------------------------
+The C version is easily built and tested by issuing the commands:
+
+	make
+	./test
 
 A Note on the JavaScript Version of HeapSort
 --------------------------------------------
