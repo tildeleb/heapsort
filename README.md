@@ -15,25 +15,31 @@ There are three versions of Heapsort in this repository:
 
 Approach
 --------
-My approach to the assignment was to proceed in 5 phases.
+My approach to the assignment was to proceed in 6 phases.
 
 First, I refreshed my memory of Heapsort by looking on the web and in Knuth Volume 3. It's basically a two phase sort the first part being the setup of a heap, a complete binary tree with an associated invariant that orders the nodes. The second part of the algorithm is a selection sort where the highest value (at the root) is moved from the end of a vector and the heap is rebuilt again, with the length being 1 less, to satisfy the the invariant.
 
 Second, I looked at a number of implementations and they were all about the same. Of course some were clearer and better written than others. I coded a simple version in Go to get a feel for the algorithm.
 
-Third, there were some decisions to make about the algorithm. It had to use location 0 of a slice and many of the examples start at location 1. That's an easy adjustment. Another decision to make was to use the Go sort package interface called Interface. Go's libraries have a public interface for sort algorithms called, creatively enough, "Interface". This interface only has 3 functions defined:
+Third, I had to decide what language to use in addition to Go. I have done a large amount of C coding and I did not want to code the second version in C. I like Javascript and it's a relevant language for this job, but I knew there would be issues with I/O. I took a chance and decided to use Javascript. In end I was able to read from a local filesystem and sort but realized that the API I was using was dead. So with much regret I coded the second version in C.
 
-	type Interface interface {
-		Len() int
-		Less(i, j int) bool
-		Swap(i, j int)
-	}
+Fourth, there were two basic decisions to make about how to code the algorithm.
 
-I decided to support the interface. It caused me to have to change my algorithm a bit because I used copy operations to move nodes in the heap and the interface only has a swap operation. With some regret I changed my version of Heapsort to use swaps instead of copies.
+a. My version had to use location 0 of a slice and many of the examples start indcies at location 1. That's an easy adjustment.
 
-Forth, I code the 2 versions of Heapsort.
+b. Another decision to make was to use the Go sort package interface called Interface. Go's libraries have a public interface for sort algorithms called, creatively enough, "Interface". This interface only has 3 functions defined.
 
-Finally I saved time at the end of the project to explore performance optimizations but all that time was used up coding the C version.
+		type Interface interface {
+			Len() int
+			Less(i, j int) bool
+			Swap(i, j int)
+		}
+
+This is much harder decision. Using the interface limits the way you can access the data and forces data access to go "through" a function call. I decided to support the interface. It caused me to have to change my algorithm a bit because I used copy operations to move nodes in the heap and the interface only has a swap operation. With some regrets, I changed my version of Heapsort to use swaps instead of copies.
+
+Fifth, I coded the 2 (became 3) versions of Heapsort.
+
+Finally while I saved time (most of a day) at the end of the project to explore coding performance optimizations all that time was used up coding the C version. I was however able to analyze the performance of Go version and to a lesser degree the C version too.
 
 Building the Project
 --------------------
