@@ -3,7 +3,7 @@ cd gensort
 make
 cd ..
 cd datasets
-#./gendata.sh
+./gendata.sh
 cd ..
 go build -v
 cd example
