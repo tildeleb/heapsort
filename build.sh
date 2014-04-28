@@ -18,4 +18,3 @@ cd ../c
 make
 echo "test C Heapsort"
 ./heapsort_test
-make
