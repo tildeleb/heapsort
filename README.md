@@ -130,6 +130,25 @@ Performance Analysis
 --------------------
 When sorting the 1.2GB dataset the Go version of Heapsort is about 10 seconds slower than the C version. I think this is to be expected. A slice is accessed and because Go is a safe language each slice access must have it's bounds checked. The interface (indirect) calling sequence is also probably slower than the the function pointers that are used in the C version.
 
+Go Profile
+----------
+	(pprof) top10 -cum
+	Total: 4795 samples
+	       5   0.1%   0.1%     4768  99.4% leb/heapsort.Heapsort
+	       0   0.0%   0.1%     4768  99.4% main.ReadSortWrite
+	       0   0.0%   0.1%     4768  99.4% main.main
+	       0   0.0%   0.1%     4768  99.4% runtime.gosched0
+	       0   0.0%   0.1%     4768  99.4% runtime.main
+	     139   2.9%   3.0%     4719  98.4% leb/heapsort.siftup
+	    1590  33.2%  36.2%     4433  92.5% sort.(*StringSlice).Less
+	      63   1.3%  37.5%     2843  59.3% runtime.cmpstring
+	    2780  58.0%  95.5%     2780  58.0% runtime.cmpbody
+	     191   4.0%  99.4%      191   4.0% sort.(*StringSlice).Swap
+
+A quick Go profile confirms that most of time is spent calling the Less function which then calls an internal function to compare strings.
+
+Go Heap Stats
+-------------
 I collected some Go memory heap statistics before and after the sort call in the Go version. The raw numbers are:
 
 	Alloc=1982301720, TotalAlloc=4139607384, Sys=2761696040, Lookups=121, Mallocs=26214676, Frees=12386707
@@ -146,7 +165,7 @@ I collected some Go memory heap statistics before and after the sort call in the
 
 As expected, the statistics confirm that there where almost no allocations during the Heapsort and no garbage collections where performed.
 
-The Go I/O performance is also slower but this could probably be optimized to get closer to the C performance.
+The Go I/O performance is also slower that the C I/O but this can probably be optimized to get closer to the C performance. I didn't try.
 
 Performance Optimizations
 -------------------------

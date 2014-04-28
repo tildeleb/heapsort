@@ -4,11 +4,13 @@ import "leb/heapsort"
 import "flag"
 import "time"
 import "fmt"
+import "log"
 import "os"
 import "io"
 import "bufio"
 import "runtime"
 import "errors"
+import "runtime/pprof"
 import . "sort"
 
 // simple porgram to read a file, sort it, write it
@@ -16,6 +18,9 @@ import . "sort"
 var mf = flag.Bool("m", false, "dump memory stats")
 var tf = flag.Bool("t", false, "show timing")
 var vf = flag.Bool("v", false, "verbose - show read and write cnts")
+var cpup = flag.String("cpup", "", "write cpu profile to file")
+var pf *os.File;
+
 var memstats *runtime.MemStats
 
 func dump_mstats(m *runtime.MemStats, cstats bool, gc bool) {
@@ -76,9 +81,17 @@ func ReadSortWrite(r *bufio.Reader, w *bufio.Writer) (rcnt, wcnt int64) {
     }
 
     cp(fmt.Sprintf("sort:  "))
+
     begin = time.Now()
+    if (*cpup != "") {
+        pprof.StartCPUProfile(pf)
+    }
     heapsort.Heapsort(data)
+    if (*cpup != "") {
+        pprof.StopCPUProfile()
+    }
     end = time.Now()
+
     d = tdiff(begin, end)
     cp(fmt.Sprintf("time=%0.3f secs\n", float64(d)/1e9))
 
@@ -114,6 +127,14 @@ func main() {
     }
 
     flag.Parse()
+    if *cpup != "" {
+        f, err := os.Create(*cpup)
+        if err != nil {
+            log.Fatal(err)
+        }
+        pf = f
+    }
+
     if flag.NArg() != 2 {
         fmt.Printf("usage: example [-m][-v] unsortedfile sortedfile\n")
         os.Exit(1)
