@@ -42,15 +42,27 @@ The C version of HeapSort
 -------------------------
 The C version is easily built and tested by issuing the commands:
 
+	cd c
 	make
-	./test
+	./heapsort_test
+
+The JavaScript version of HeapSort (extra credit)
+-------------------------------------------------
+This JavaScript doesn't need to be build. The file "index.html" in the js directory needs to be opened in a web browser (Chrome and Safari tested). On the Mac you can do the following:
+
+	cd js
+	open index.html
+
+After this drag a file from the datasets directory onto the web page and it will be loaded and sorted. The first 10 lines of the sorted file will be displayed on the web page. I could probably make the file writing work on Chrome but it didn't seem to make sense for a "dead" API. See below.
 
 A Note on the JavaScript Version of HeapSort
 --------------------------------------------
 
-I had originally wanted to do a JavaScript version in addition to the Go version. I've done some JavaScript programming and enjoy it. I knew the biggest issues would be the file I/O but I knew there was a new [File][1] API  that Google was working on and this would give me a chance to explore that. I also figured that if that didn't work out I could find some kind of command line/CLI way to ay least read "stdin" and write "stdout" and I could write a simple shell script to drive it.
+I had originally wanted to do a JavaScript version in addition to the Go version. I've done some JavaScript programming and enjoy it. I'd like to focus on Go programming and JavaScript so it would seem to make sense to do a JavaScript version. 
 
-Writing the js version of HeapSort was easy. It didn't take too long to figure out the new native file I/O support and get that turning over for file reads. Writes were harder and not documented at the website that I used to get up to speed on the native file API. I then looked at another web page on the same site about the [Filesystem][2] APIs. I was surprised to find out that:
+I knew the biggest issues would be the file I/O to the local filesystem but I knew there was a new [File][1] API that Google was working on and this would give me a chance to explore that. I knew it worked in Safari and Chrome. I also figured that if that didn't work out I could find some kind of command line/CLI way to ay least read "stdin" and write "stdout" and then write a simple shell script to drive it.
+
+Writing the js version of HeapSort was easy. It didn't take too long to understand the new native file I/O support and get that turning over for file reads. Writes were harder and not documented at the website that I used to get up to speed on the native file API. I then looked at another web page on the same site about the [Filesystem][2] APIs. I was surprised to find out that:
 
 **"In April 2014, it was announced on public-webapps that the Filesystem API spec should be considered dead. Other browsers have showed little interest in implementing it."**
 

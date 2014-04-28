@@ -10,6 +10,6 @@ hsort:	heapsort.h heapsort.o hsort.o etime.o
 etime.o:	etime.h
 
 clean:
-	rm *.o
-	rm hsort
-	rm hsort_test
+	-rm *.o
+	-rm hsort
+	-rm heapsort_test
