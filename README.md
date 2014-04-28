@@ -21,11 +21,13 @@ First, I refreshed my memory of Heapsort by looking on the web and in Knuth Volu
 
 Second, I looked at a number of implementations and they were all about the same. Of course some were clearer and better written than others. I coded a simple version in Go to get a feel for the algorithm.
 
-Third, I had to decide what language to use in addition to Go. I have done a large amount of C coding and I did not want to code the second version in C. I like Javascript and it's a relevant language for this job, but I knew there would be issues with I/O. I took a chance and decided to use Javascript. In end I was able to read from a local filesystem and sort but realized that the API I was using was dead. So with much regret I coded the second version in C.
+Third, I had to decide what language to use in addition to Go. I have done a large amount of C coding and I did not want to code the second version in C. I considered a lisp or scheme version but wasn't sure that was the right choice for this assignment.
+
+I like Javascript and it's a relevant language for this job, but I knew there would be issues with local filesystem I/O. I took a chance and decided to use Javascript. In end I was able to read from the local filesystem and run the Heapsort. Just as I was about to start on writing the sorted results to the local filesystem I realized that the API I was using was "dead" and writes to the local filesystem were not implemented in Safari. I probably could have made it work in Chrome, which has a complete implementation of the API, but a dead API is a dead API (see below for details). So with much regret I coded the second version in C.
 
 Fourth, there were two basic decisions to make about how to code the algorithm.
 
-a. My version had to use location 0 of a slice and many of the examples start indcies at location 1. That's an easy adjustment.
+a. My version had to use location 0 of a slice and many of the examples start indicies at location 1. That's an easy adjustment.
 
 b. Another decision to make was to use the Go sort package interface called Interface. Go's libraries have a public interface for sort algorithms called, creatively enough, "Interface". This interface only has 3 functions defined.
 
@@ -39,7 +41,7 @@ This is much harder decision. Using the interface limits the way you can access 
 
 Fifth, I coded the 2 (became 3) versions of Heapsort.
 
-Finally while I saved time (most of a day) at the end of the project to explore coding performance optimizations all that time was used up coding the C version. I was however able to analyze the performance of Go version and to a lesser degree the C version too.
+Finally while I saved time (most of a day) at the end of the project to explore coding various performance optimizations. Unfortunately almost all of that time was used up coding the C version. I was however able to analyze the performance of Go version and to a lesser degree the C version.
 
 Building the Project
 --------------------
@@ -49,7 +51,7 @@ The first step is to clone to project from GitHub:
 	
 	go get github.com/tildeleb/Heapsort
 
-The project can be built by running the following shell script at top level:
+The project is best built by running the following shell script at top level:
 
 	./build.sh
 
@@ -70,7 +72,9 @@ The Go version is easily built and tested by issuing the commands at the top lev
 	go build
 	go test
 
-The program that does the actual 
+The program that does the actual testing is here:
+
+	cd hsort
 
 The C version of Heapsort
 -------------------------
@@ -79,6 +83,8 @@ The C version is easily built and tested by issuing the commands:
 	cd c
 	make
 	./heapsort_test
+
+Again "hsort" is the program that does the actually testing.
 
 The JavaScript version of Heapsort (extra credit)
 -------------------------------------------------
@@ -136,7 +142,7 @@ Raw Performance Numbers
 
 Performance Analysis
 --------------------
-When sorting the 1.2GB dataset the Go version of Heapsort is about 10 seconds slower than the C version. I think this is to be expected. A slice is accessed and because Go is a safe language each slice access must have it's bounds checked. The interface (indirect) calling sequence is also probably slower than the the function pointers that are used in the C version.
+When sorting the 1.2GB dataset the Go version of Heapsort is about 10 seconds slower than the C version. I think this is to be expected. A slice is accessed and because Go is a safe language each slice access must have it's bounds checked. The interface (indirect) calling sequence is also probably slower than the the function pointers that are used in the C version but that remain to be proven.
 
 Go Profile
 ----------
@@ -177,7 +183,7 @@ The Go I/O performance is also slower that the C I/O but this can probably be op
 
 Performance Optimizations
 -------------------------
-Optimizing the performance of sorting algorithms is a known problem. The keys are:
+Optimizing the performance of sorting algorithms is a known problem. The usual suspects are:
 
 1. Minimize key compares
 2. Avoid function call overhead if possible
@@ -185,15 +191,15 @@ Optimizing the performance of sorting algorithms is a known problem. The keys ar
 
 Minimizing Key Compares
 -----------------------
-For Heapsort there is technique first discovered by Floyd and mentioned in Kunth to minimize key compares by moving one of the compares out of the main loop in the siftup. I would have liked to explore this but I ran out of time to do so. Also, the technique requires set/get access to the vector of pointers and the Go Interface I used only provides SWAP and not a COPY operation. The C version of the Interface I designed has operations for get and set so my plan was to explore this optimization in C first to see if the expected speedup of 15-20% can be realized.
+There is technique first discovered by Floyd and mentioned in Kunth to minimize key compares by moving one of the compares out of the main loop in the function siftup. I would have liked to explore this optimization but I ran out of time to do so. Also, the technique requires set/get access to the vector of pointers and the Go Interface I used only provides Swap and not a Set/Get or Copy operations. The C version of the Interface I designed has operations for Get and Set so my plan was to explore this optimization in C first to see if the expected speedup of 15-20% can be realized.
 
 Avoiding Function Call Overhead
 -------------------------------
-Since "interfaces" are used in both the Go and C versions of the code there are many indirect function calls. If the key compare function call can be inlined this overhead can be eliminated. It would be interesting to see how much overhead is due to function calls. With the C version macros and tweaking gcc could be used to explore various options for inlining.
+Since "interfaces" are used in both the Go and C versions of the code there are many indirect function calls. If the key compare function call can be inlined this overhead can be eliminated. It would be interesting to see how much overhead is due to indirect function calls. With the C version, macros and tweaking gcc could be used to explore various options for inlining and optimization.
 
 Hitting Processor Caches
 ------------------------
-The difference between a L1 cache hit and a worst case complete memory miss is at least 1000:1 if not 10,000:1 or higher. Neither the 16 MB or 1.2GB dataset fit in any of the processor caches on my laptop but it might be possible to find a AWS instance with larger caches, maybe large enough to hold the entire 16 MB dataset. This would be interesting to explore.
+The difference between a L1 cache hit and a worst case complete memory miss is at least 1000:1 if not 10,000:1 or higher. Neither the 16 MB or 1.2GB dataset fit in any of the processor caches on my laptop but is possible to find an AWS instance with larger caches, probably large enough to hold the entire 16 MB dataset. This would be an interesting option to explore.
 
 In addition all of the record data are accessed indirectly via pointers in a vector. In theory the data could be stored in a single flat vector and offsets used to avoid the indirection. This *might* improve memory performance but it's not clear how much the indirection hurts and how much the indirect pointers pollute the various caches.
 
