@@ -3,7 +3,7 @@ echo "make gensort"
 cd gensort
 make
 cd ..
-echo "generate datasets"
+echo "generate datasets (may take a minute)"
 cd datasets
 ./gendata.sh
 cd ..
