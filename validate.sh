@@ -28,4 +28,4 @@ hsort -t ../datasets/l12800k out
 rm out
 cd ..
 echo ""
-echo "Finish Heapsort validation run\n"
+echo "Finish Heapsort validation run"
