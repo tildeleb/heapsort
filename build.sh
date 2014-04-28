@@ -9,8 +9,12 @@ cd datasets
 cd ..
 echo "build Go Heapsort"
 go build -v
+go test
+echo "test Go Heapsort"
 cd hsort
 go build -v
 echo "build C Heapsort"
 cd ../c
+echo "test C Heapsort"
+./heapsort_test
 make

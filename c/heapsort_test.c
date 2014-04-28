@@ -86,9 +86,9 @@ TestTrivial() {
     	d->Add(d, (void*)s[i], 0);
     }
 
-    Pl(d, "s");
+    //Pl(d, "s");
     HeapSort(d);
-    Pl(d, "e");
+    //Pl(d, "e");
     return verify(d);
 }
 
@@ -104,7 +104,7 @@ TestExtended() {
 			srandomdev();
         }
         n = rbetween(10, 1000000);
-        fprintf(stderr, "%ld: %ld ", i, n);
+        //fprintf(stderr, "%ld: %ld ", i, n);
         d = NewIntInterface(n);
         fill(d, 1, n*3);
         HeapSort(d);
@@ -112,11 +112,15 @@ TestExtended() {
         	return true;
         DelInterface(d);
     }
-    fprintf(stderr, "\n");
+    //fprintf(stderr, "\n");
     return false;
 }
 
 int main(int argc, char *argv[]) {
-	TestTrivial();
-	TestExtended();
+	if (TestTrivial() || TestExtended()) {
+		fprintf(stderr, "Tests Failed\n");
+		exit(1);
+	} else {
+		fprintf(stderr, "Tests OK\n");
+	}
 }
