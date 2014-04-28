@@ -15,6 +15,7 @@ cd hsort
 go build -v
 echo "build C Heapsort"
 cd ../c
+make
 echo "test C Heapsort"
 ./heapsort_test
 make
