@@ -16,6 +16,7 @@ import . "sort"
 var mf = flag.Bool("m", false, "dump memory stats")
 var tf = flag.Bool("t", false, "show timing")
 var vf = flag.Bool("v", false, "verbose - show read and write cnts")
+var memstats *runtime.MemStats
 
 func dump_mstats(m *runtime.MemStats, cstats bool, gc bool) {
     fmt.Printf("Alloc=%d, TotalAlloc=%d, Sys=%d, Lookups=%d, Mallocs=%d, Frees=%d\n", m.Alloc, m.TotalAlloc, m.Sys, m.Lookups, m.Mallocs, m.Frees)
@@ -68,12 +69,24 @@ func ReadSortWrite(r *bufio.Reader, w *bufio.Writer) (rcnt, wcnt int64) {
     d := tdiff(begin, end)
     cp(fmt.Sprintf("time=%0.3f secs\n", float64(d)/1e9))
 
+    // dump memory stats before Sort
+    if *mf {
+        runtime.ReadMemStats(memstats)
+        dump_mstats(memstats, false, false)
+    }
+
     cp(fmt.Sprintf("sort:  "))
     begin = time.Now()
     heapsort.Heapsort(data)
     end = time.Now()
     d = tdiff(begin, end)
     cp(fmt.Sprintf("time=%0.3f secs\n", float64(d)/1e9))
+
+    // dump memory stats after Sort
+    if *mf {
+        runtime.ReadMemStats(memstats)
+        dump_mstats(memstats, false, false)
+    }
 
     cp(fmt.Sprintf("write: "))
     begin = time.Now()
@@ -108,7 +121,7 @@ func main() {
     for i := 0; i < flag.NArg(); i++ {
         paths = append(paths, flag.Arg(i))
     }
-    memstats := new(runtime.MemStats)
+    memstats = new(runtime.MemStats)
 
 	in, err := os.Open(paths[0])
     if err != nil {
@@ -131,8 +144,8 @@ func main() {
         fmt.Printf("rcnt=%d, wcnt=%d\n", rcnt, wcnt)
     }
 
-    runtime.ReadMemStats(memstats)
     if *mf {
-        dump_mstats(memstats, true, false)
+        runtime.ReadMemStats(memstats)
+        dump_mstats(memstats, false, false)
     }
 }

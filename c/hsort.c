@@ -15,7 +15,7 @@ Sort(FILE* fi, FILE* fo) {
 	Interface* d;
 	Int i, len;
 	Int recordSize = 100;
-	Int maxRecords = 1000000;
+	Int maxRecords = 20000000;
 	Str s;
 	long astart, astop, rstart, rstop, sstart, sstop, wstart, wstop;
 

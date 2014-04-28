@@ -10,6 +10,6 @@ valsort: valsort.c rand16.o rand16.h
 	gcc -o valsort valsort.c rand16.o -lz
 
 clean:
-	rm *.o
-	rm valsort
-	rm gensort
+	-rm *.o
+	-rm valsort
+	-rm gensort
