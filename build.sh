@@ -6,7 +6,7 @@ cd datasets
 ./gendata.sh
 cd ..
 go build -v
-cd example
+cd hsort
 go build -v
 cd ../c
 make

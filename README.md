@@ -65,10 +65,12 @@ The project can be built by hand as follows:
 
 The Go version of Heapsort
 --------------------------
-The Go version is easily built and tested by issuing the commands:
+The Go version is easily built and tested by issuing the commands at the top level of the project:
 
 	go build
 	go test
+
+The program that does the actual 
 
 The C version of Heapsort
 -------------------------
